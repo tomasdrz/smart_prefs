@@ -1,0 +1,15 @@
+# Internal documentation
+ANALYSIS_AND_ROADMAP.md
+
+# Build and cache
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+
+# Git
+.gitignore
