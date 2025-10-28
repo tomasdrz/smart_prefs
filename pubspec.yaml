@@ -1,6 +1,6 @@
 name: smart_prefs
 description: A flexible, type-safe preference management system supporting local, remote, and volatile storage with an elegant enum-based API.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/tomasdrz/smart_prefs
 repository: https://github.com/tomasdrz/smart_prefs
 
