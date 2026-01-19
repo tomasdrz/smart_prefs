@@ -243,8 +243,8 @@ These will be addressed in future releases based on community feedback and usage
 ## 📚 Resources
 
 - **Package on pub.dev**: [pub.dev/packages/smart_prefs](https://pub.dev/packages/smart_prefs)
-- **GitHub Repository**: [github.com/tomasdrz/smile_baby](https://github.com/tomasdrz/smile_baby)
-- **Issue Tracker**: [GitHub Issues](https://github.com/tomasdrz/smile_baby/issues)
+- **GitHub Repository**: [github.com/tomasdrz/smart_prefs](https://github.com/tomasdrz/smart_prefs)
+- **Issue Tracker**: [GitHub Issues](https://github.com/tomasdrz/smart_prefs/issues)
 - **Documentation**: See README.md and REMOTE_SETUP.md
 
 ---

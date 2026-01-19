@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_prefs/smart_prefs.dart';
@@ -100,6 +103,31 @@ void main() {
         'from_backend',
       );
     });
+
+    test('loadPreferences should not complete twice when remote load is slow',
+        () {
+      fakeAsync((async) {
+        final slowRemote = SlowRemotePrefs(const Duration(seconds: 15));
+        Prefs.setRemotePreferences(slowRemote);
+
+        var completed = false;
+        final future =
+            Prefs.loadPreferences({'remote_pref': PrefType.remote});
+        unawaited(future.then((_) => completed = true));
+
+        async.elapse(const Duration(seconds: 10));
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(seconds: 10));
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(seconds: 5));
+        async.flushMicrotasks();
+
+        expect(completed, true);
+        expect(slowRemote.callCount, 1);
+      });
+    });
   });
 
   group('Prefs Logging', () {
@@ -151,4 +179,21 @@ class MockRemotePrefs extends RemotePrefs {
   }
 
   Map<String, dynamic> getSavedData() => Map.from(_data);
+}
+
+class SlowRemotePrefs extends RemotePrefs {
+  SlowRemotePrefs(this.delay);
+
+  final Duration delay;
+  int callCount = 0;
+
+  @override
+  Future<Map<String, dynamic>?> getPreferences() async {
+    callCount += 1;
+    await Future<void>.delayed(delay);
+    return {'remote_pref': 'value'};
+  }
+
+  @override
+  Future<void> setPreference(String key, dynamic value) async {}
 }

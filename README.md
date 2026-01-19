@@ -22,7 +22,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  smart_prefs: ^0.1.0
+  smart_prefs: ^0.1.2
 ```
 
 Then run:
@@ -277,10 +277,11 @@ Prefs.setRemoteLoadCallback((bool success, int attempts) {
 ### Complete advanced setup
 
 ```dart
-await Prefs.init(
-  preferences: Pref.values,
-  remotePreferences: MyRemotePrefs(),
+final prefsManager = PrefsManager(
+  remote: MyRemotePrefs(),
+  enumValues: [UserPrefs.values],
 );
+await prefsManager.init();
 
 // Configure intelligent retry
 Prefs.setMaxRetries(5);
@@ -383,7 +384,7 @@ The [example](example/) directory contains two complete examples:
 ### 1. Basic Example (`main.dart`)
 Simple demonstration with in-memory mock backend:
 ```bash
-dart run example/main.dart
+flutter run -t example/main.dart
 ```
 
 Shows:
@@ -430,7 +431,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🐛 Issues
 
-Please file feature requests and bugs at the [issue tracker](https://github.com/tomasdrz/smile_baby/issues).
+Please file feature requests and bugs at the [issue tracker](https://github.com/tomasdrz/smart_prefs/issues).
 
 ## 🙏 Acknowledgments
 

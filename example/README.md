@@ -1,11 +1,11 @@
 # Example Usage
 
-This directory contains example implementations for the `prefs` package.
+This directory contains example implementations for the `smart_prefs` package.
 
 ## 📁 Files
 
 ### 1. `main.dart` - Basic Example
-Simple demonstration of the prefs package with an in-memory mock backend.
+Simple demonstration of the smart_prefs package with an in-memory mock backend.
 
 **Features**:
 - Local preferences (SharedPreferences)
@@ -54,7 +54,7 @@ Advanced example showing SQLite as offline-first storage with cloud sync.
 
 **Why commented out?**
 
-The prefs package is lightweight and doesn't force SQLite on users.
+The smart_prefs package is lightweight and doesn't force SQLite on users.
 This example shows HOW to implement the pattern if you need it, but it's
 commented out to prevent dependency errors in the main package.
 
@@ -94,7 +94,7 @@ App → prefs → SQLitePrefs → Local SQLite DB
 
 1. **Try the basic example first**:
    ```bash
-   dart run example/main.dart
+   flutter run -t example/main.dart
    ```
 
 2. **Read REMOTE_SETUP.md** to understand backend implementations

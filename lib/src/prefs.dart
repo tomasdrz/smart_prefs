@@ -222,60 +222,93 @@ class Prefs {
       Map<String, PrefType> preferences) async {
     final completer = Completer<void>();
     var retryCount = 0;
+    var isLoading = false;
 
     Timer.periodic(const Duration(seconds: 10), (timer) async {
-      // Check connectivity before attempting load
-      if (_connectivityChecker != null) {
-        final hasConnectivity = await _connectivityChecker!();
-        if (!hasConnectivity) {
-          _logger(
-            PrefsLogLevel.warning,
-            'No connectivity detected, skipping remote load (attempt ${retryCount + 1})',
-          );
-          // Don't increment retry count for connectivity issues
-          return;
-        }
+      if (completer.isCompleted) {
+        timer.cancel();
+        return;
       }
 
-      final remoteValues = await _remotePreferences!.getPreferences();
+      if (isLoading) {
+        return;
+      }
 
-      if (remoteValues != null) {
-        // Filter and store only defined preferences
-        for (final entry in preferences.entries) {
-          if (entry.value != PrefType.remote) {
-            continue;
-          }
-
-          final key = entry.key;
-
-          if (remoteValues.containsKey(key)) {
-            _preferencesCache[key] = remoteValues[key];
+      isLoading = true;
+      try {
+        // Check connectivity before attempting load
+        if (_connectivityChecker != null) {
+          final hasConnectivity = await _connectivityChecker!();
+          if (!hasConnectivity) {
+            _logger(
+              PrefsLogLevel.warning,
+              'No connectivity detected, skipping remote load (attempt ${retryCount + 1})',
+            );
+            // Don't increment retry count for connectivity issues
+            return;
           }
         }
 
-        _logger(
-          PrefsLogLevel.info,
-          'Remote preferences loaded successfully after ${retryCount + 1} attempt(s)',
-        );
-        _remoteLoadCallback?.call(true, retryCount + 1);
-        timer.cancel();
-        completer.complete();
-      } else {
-        retryCount++;
-        if (_maxRetries > 0 && retryCount >= _maxRetries) {
+        Map<String, dynamic>? remoteValues;
+        try {
+          remoteValues = await _remotePreferences!.getPreferences();
+        } catch (e, stackTrace) {
           _logger(
-            PrefsLogLevel.warning,
-            'Failed to load remote preferences after $_maxRetries attempts. Giving up.',
+            PrefsLogLevel.error,
+            'Failed to load remote preferences: $e\n$stackTrace',
           );
-          _remoteLoadCallback?.call(false, retryCount);
+          remoteValues = null;
+        }
+
+        if (completer.isCompleted) {
           timer.cancel();
-          completer.complete();
-        } else {
-          _logger(
-            PrefsLogLevel.warning,
-            'Could not load remote preferences, retrying in 10 seconds... (attempt $retryCount/${_maxRetries > 0 ? _maxRetries : "∞"})',
-          );
+          return;
         }
+
+        if (remoteValues != null) {
+          // Filter and store only defined preferences
+          for (final entry in preferences.entries) {
+            if (entry.value != PrefType.remote) {
+              continue;
+            }
+
+            final key = entry.key;
+
+            if (remoteValues.containsKey(key)) {
+              _preferencesCache[key] = remoteValues[key];
+            }
+          }
+
+          _logger(
+            PrefsLogLevel.info,
+            'Remote preferences loaded successfully after ${retryCount + 1} attempt(s)',
+          );
+          _remoteLoadCallback?.call(true, retryCount + 1);
+          timer.cancel();
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        } else {
+          retryCount++;
+          if (_maxRetries > 0 && retryCount >= _maxRetries) {
+            _logger(
+              PrefsLogLevel.warning,
+              'Failed to load remote preferences after $_maxRetries attempts. Giving up.',
+            );
+            _remoteLoadCallback?.call(false, retryCount);
+            timer.cancel();
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
+          } else {
+            _logger(
+              PrefsLogLevel.warning,
+              'Could not load remote preferences, retrying in 10 seconds... (attempt $retryCount/${_maxRetries > 0 ? _maxRetries : "inf"})',
+            );
+          }
+        }
+      } finally {
+        isLoading = false;
       }
     });
 
@@ -322,3 +355,4 @@ class Prefs {
     }
   }
 }
+

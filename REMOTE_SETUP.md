@@ -1,6 +1,6 @@
 # Remote Preferences Setup Guide
 
-This guide shows how to set up remote storage backends for the `prefs` package.
+This guide shows how to set up remote storage backends for the `smart_prefs` package.
 
 ## 📋 Table of Contents
 
@@ -56,7 +56,7 @@ service cloud.firestore {
 ### Implementation
 
 ```dart
-import 'package:prefs/prefs.dart';
+import 'package:smart_prefs/smart_prefs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -164,7 +164,7 @@ CREATE TRIGGER update_preferences_updated_at
 ### Implementation
 
 ```dart
-import 'package:prefs/prefs.dart';
+import 'package:smart_prefs/smart_prefs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabasePrefs extends RemotePrefs {
@@ -257,7 +257,7 @@ DELETE /api/users/{userId}/preferences/{key} - Delete a preference
 ### Implementation
 
 ```dart
-import 'package:prefs/prefs.dart';
+import 'package:smart_prefs/smart_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -335,7 +335,7 @@ class RestApiPrefs extends RemotePrefs {
 
 ## SQLite (Offline-First Pattern)
 
-**Important**: This is an **advanced implementation pattern** for offline-first apps. The `prefs` package does NOT include SQLite support built-in. This section shows how YOU would implement a local database backend that syncs to a remote server.
+**Important**: This is an **advanced implementation pattern** for offline-first apps. The `smart_prefs` package does NOT include SQLite support built-in. This section shows how YOU would implement a local database backend that syncs to a remote server.
 
 ### When to use this pattern
 
@@ -378,7 +378,7 @@ Use SQLite as your `RemotePrefs` implementation when you need:
 
 ### Why this pattern?
 
-The prefs package treats SQLite as a "remote" storage because:
+The smart_prefs package treats SQLite as a "remote" storage because:
 - It's **separate from SharedPreferences** (local storage)
 - It requires **async initialization** (database setup)
 - It supports **multi-user** scenarios (user_id column)
@@ -403,7 +403,7 @@ CREATE INDEX idx_preferences_synced ON preferences(synced);
 ### Implementation
 
 ```dart
-import 'package:prefs/prefs.dart';
+import 'package:smart_prefs/smart_prefs.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SQLitePrefs extends RemotePrefs {
@@ -517,7 +517,7 @@ UserPrefs.theme.set('dark');  // Saved to SQLite instantly
 await sqlitePrefs.syncToRemote(firebaseBackend);
 ```
 
-**Key insight**: You're using SQLite as a "caching layer" between the prefs package and your actual cloud backend. The prefs package doesn't know or care that you're syncing to another remote—it just sees SQLite as the remote storage.
+**Key insight**: You're using SQLite as a "caching layer" between the smart_prefs package and your actual cloud backend. The smart_prefs package doesn't know or care that you're syncing to another remote—it just sees SQLite as the remote storage.
 ```
 
 ---
@@ -564,7 +564,7 @@ enum SyncStrategy {
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:prefs/prefs.dart';
+import 'package:smart_prefs/smart_prefs.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
