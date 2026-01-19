@@ -1,3 +1,4 @@
+// ignore_for_file: cascade_invocations
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
@@ -111,8 +112,7 @@ void main() {
         Prefs.setRemotePreferences(slowRemote);
 
         var completed = false;
-        final future =
-            Prefs.loadPreferences({'remote_pref': PrefType.remote});
+        final future = Prefs.loadPreferences({'remote_pref': PrefType.remote});
         unawaited(future.then((_) => completed = true));
 
         async.elapse(const Duration(seconds: 10));

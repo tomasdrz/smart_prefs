@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print, omit_local_variable_types, always_put_control_body_on_new_line, sort_constructors_first, unreachable_switch_case
 import 'package:smart_prefs/smart_prefs.dart';
 
 /// Example implementation of remote preferences using a simple in-memory store.
